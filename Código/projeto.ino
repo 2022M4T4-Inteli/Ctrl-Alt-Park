@@ -1,6 +1,8 @@
+//Iniciando bibliotecas
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 
+//Definindo variaveis
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 #define LED1 45
@@ -13,7 +15,7 @@ const int I2C_SDA = 42;
 const int I2C_SCL = 41;
 
 void setup() {
-  // put your setup code here, to run once:
+  //Definindo tipo de retorno de cada uma das portas usadas
   pinMode(LED1, OUTPUT);
   pinMode(LED2, OUTPUT);
   pinMode(LED3, OUTPUT);
@@ -21,6 +23,8 @@ void setup() {
   pinMode(BUZZER, OUTPUT);
 
   Serial.begin(115200);
+
+  //Iniciando o display
   Wire.begin();
   Serial.println("\nI2C Scanner");
   lcd.init();                
@@ -28,13 +32,16 @@ void setup() {
 }
 
 void loop() {
+  //Definindo a partir de onde começará a escrever 
   lcd.setCursor(6, 0);
-  // print message
+  //Mandando a mensagem
   lcd.print("262");
 
+  //Acendendo o LED
   digitalWrite(LED3, HIGH);
 }
 
+//Função para identificar em qual endereço está o display, e verificar se ele está conectado.
 void scanner()
 {
   byte error, address;
