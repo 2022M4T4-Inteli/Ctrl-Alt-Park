@@ -11,8 +11,6 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 #define LED4 46
 #define BUZZER 18
 
-const int I2C_SDA = 42;
-const int I2C_SCL = 41;
 
 void setup() {
   //Definindo tipo de retorno de cada uma das portas usadas
@@ -24,7 +22,7 @@ void setup() {
 
   Serial.begin(115200);
 
-  //Iniciando o display
+//Iniciando o display
   Wire.begin();
   Serial.println("\nI2C Scanner");
   lcd.init();                
