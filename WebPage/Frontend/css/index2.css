@@ -1,0 +1,55 @@
+.background{
+    background-color:black;
+    border: 1px solid black;
+    margin: 1rem;
+    padding: 2rem 2rem;
+    text-align: center;
+}
+
+.child {
+    display: inline-block;
+    padding: 1rem 1rem;
+    vertical-align: middle;
+  }
+
+.font{
+    font-size: 100;
+    font-style: normal;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.allign {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 2%;
+    width: 25%;
+    height: 100%;
+}
+
+.allign2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 25%;
+    height: 100%;
+}
+
+.button{
+    background-color: #92E4A8;
+    border-radius: 15px;
+}
+.button2{
+    background-color: black;
+    border-radius: 15px;
+    color: white;
+}
+
+.allign3{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 85%;
+    width: 25%;
+    height: 100%;
+}

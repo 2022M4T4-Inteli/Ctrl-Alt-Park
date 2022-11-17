@@ -1,0 +1,28 @@
+.background{
+    color: white;
+}
+
+.allign {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.button{
+    background-color: white;
+    border-radius: 10px;
+    border-color: #92E4A8;
+}
+
+.button2{
+    background-color: #92E4A8;
+    border-radius: 15px;
+    border-color: #92E4A8;
+}
+
+.categories{
+    background-color: #92E4A8;
+    border-radius: 5px;
+    border-color: #92E4A8;
+    color: black;
+}
