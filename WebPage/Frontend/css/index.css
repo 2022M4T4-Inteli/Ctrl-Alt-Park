@@ -27,7 +27,7 @@
     flex-direction: column;
     gap: 1.5rem;
     align-items: center;
-    background-color: #92E4A8;
+    background-color: var(--color);
     padding-top: 2%;
     width: 25%;
     height: 100%;
@@ -38,7 +38,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #00BE33;
+    background-color: var(--color);
     color: #373D43;
     font-size: 2rem;
     font-weight: 700;
@@ -67,6 +67,7 @@
 .plate-content {
     display: flex;
     flex-direction: row;
+    justify-content: center;
     font-weight: 700;
     height: 55%;
     width: 100%;
@@ -75,19 +76,13 @@
 .plate-status {
     display: flex;
     justify-content: center;
-    width: 35%;
+    align-items: center;
+    color: #FFFFFF;
+    font-size: 1.5rem;
+    width: 75%;
     height: 50%;
     margin-left: 10%;
     margin-right: 10%;
     margin-top: 5%;
     background-color: var(--color);
-}
-
-.owner-name {
-    display: flex;
-    word-wrap: normal;
-    align-items: center;
-    justify-content: center;
-    width: 50%;
-    height: 100%;
 }
