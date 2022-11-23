@@ -1,9 +1,12 @@
+
 // Including librarys
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 #include <MFRC522.h>
 #include <SPI.h>
 #include <WiFi.h>
+#include <time.h> 
+#include <string.h>
 
 // Defining the variables that represent the ports
 LiquidCrystal_I2C lcd(0x27, 16, 2);
@@ -16,9 +19,16 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 #define LED2 39
 #define LED3 45
 #define LED4 37
+#define PRISMA_NUMBER 256
 
 // Declaring variables
 int iniciar = 0;
+bool process = false;
+
+struct returns{
+  String time;
+  int prisma_number;
+  };
 
 bool ftmSuccess = true;
 
@@ -81,19 +91,17 @@ class LeitorRFID{
     int cartaoDetectado = 0;
     int cartaoJaLido = 0;
 
-    // void processaCodigoLido(){
-    //   char codigo[3*rfid->uid.size+1];
-    //   codigo[0] = 0;
-    //   char temp[10];
-    //   for(int i=0; i < rfid->uid.size; i++){
-    //     sprintf(temp,"%X",rfid->uid.uidByte[i]);
-    //     strcat(codigo,temp);
-    //   }
-    //   codigo[3*rfid->uid.size+1] = 0;
-    //   strcpy(codigoRFIDLido,codigo);
-    //   Serial.println(codigoRFIDLido);
-    // }
   public:
+
+    String getTime(){
+      time_t rawtime;
+      struct tm * timeinfo;
+
+      time (&rawtime);
+      timeinfo = localtime (&rawtime);
+      return asctime(timeinfo);
+    }
+
     LeitorRFID(MFRC522 *leitor){
       rfid = leitor;
       rfid->PCD_Init();
@@ -110,6 +118,22 @@ class LeitorRFID{
       return(cartaoJaLido);
     };
 
+    void tinkleLed(){
+      while(process){
+        leCartao();
+        digitalWrite(LED4, HIGH);
+        delay(1000);
+        digitalWrite(LED4, LOW);
+        delay(1000);
+      }
+    }
+
+    struct returns data(){
+      struct returns returns_instance;
+      returns_instance.time = getTime();
+      returns_instance.prisma_number = PRISMA_NUMBER;
+      return (returns_instance);
+    }
     // Reading card and giving feedback to user
     void leCartao(){
       if (rfid->PICC_IsNewCardPresent()) {
@@ -117,12 +141,18 @@ class LeitorRFID{
         Serial.println("Cartao presente");
         cartaoDetectado = 1;
         if (rfid->PICC_ReadCardSerial()) {
+          if (process == false){
+            process = true;
+          }
+          else{
+            process = false;
+          }
           Serial.println("Cartao lido");
-          digitalWrite(LED4, HIGH);
           cartaoJaLido = 1;
           //processaCodigoLido();
           rfid->PICC_HaltA(); // Halt PICC
           rfid->PCD_StopCrypto1(); // Stop encryption on PCD
+          digitalWrite(LED4, HIGH);
           tone(BUZZER, 3000, 1000);
           delay(1000);
         }
@@ -188,6 +218,19 @@ void setup() {
 void loop() {
   // Starting reader
   leitor->leCartao();
+
+  if(process){
+    struct returns entrada;
+    struct returns saida;
+
+    entrada = leitor->data();
+    Serial.println(entrada.prisma_number);
+    Serial.println(entrada.time);
+    leitor->tinkleLed();
+    saida = leitor->data();
+    Serial.println(saida.prisma_number);
+    Serial.println(saida.time);
+  }
   
   // Checking card
   if(leitor->cartaoFoiLido()){
