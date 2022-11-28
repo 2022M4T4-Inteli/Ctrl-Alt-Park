@@ -22,6 +22,18 @@
     box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.25);
 }
 
+#requested {
+    overflow-y:scroll;
+}
+
+#on-course {
+    overflow-y:scroll;
+}
+
+#arrived {
+    overflow-y: scroll;
+}
+
 .plates-label {
     display: flex;
     flex-direction: column;
@@ -85,4 +97,9 @@
     margin-right: 10%;
     margin-top: 5%;
     background-color: var(--color);
+}
+
+.plate-text {
+    position: absolute;
+    user-select: none;
 }
