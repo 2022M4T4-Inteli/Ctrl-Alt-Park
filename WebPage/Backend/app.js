@@ -8,7 +8,8 @@ const sqlite3 = require('sqlite3').verbose();
 const DBPATH = 'DataBase/estapar.db';
 
 // const hostname = '127.0.0.1';
-const hostname = '10.128.64.121';
+const hostname = '10.128.64.231';
+// const hostname = '192.168.106.1';
 const port = 2707;
 
 app.use(express.static("../Frontend"));
@@ -38,15 +39,17 @@ app.get('/getAllVallets', (req, res) => {
 	db.close();
 });
 
-app.get('/getStatus', (req, res) => {
+app.get('/getStatus/:prism', (req, res) => {
 	res.statusCode = 200;
 	res.setHeader('Access-Control-Allow-Origin', '*');
 
 	var db = new sqlite3.Database(DBPATH);
 	var sql = `SELECT ID, PRISM, STATUS FROM VALLETS WHERE PRISM = ? AND STATUS != "Carro devolvido"`;
 
+	const { prism } = req.params;
+
 	var param = [];
-	param.push(req.body.Prism);
+	param.push(prism);
 
 	db.all(sql, param, (err, rows) => {
 		if (err) {
@@ -89,6 +92,8 @@ app.post('/postVallet', async (req, res) => {
 	var data = formatDate(new Date());
 
 	var param = [req.body.Prism, data];
+
+	console.log(req.body);
 
 	db.all(sql, param, (err, rows) => {
 		if (err){
@@ -143,6 +148,8 @@ app.put('/updateValletStatus', async (req, res) => {
 	var db = new sqlite3.Database(DBPATH);
 	var [sql, param] = SqlCode(actualStatus.Status, req.body.IdValletParking, actualStatus.Id, date);
 
+	console.log(req.body);
+
 	db.all(sql, param, (err, rows) => {
 		if (err) {
 			throw err;
@@ -161,6 +168,8 @@ app.put('/updateValletTime', async (req, res) => {
 
 	var db = new sqlite3.Database(DBPATH);
 	var sql = `UPDATE VALLETS SET TIME = ? WHERE ID = ?`;
+
+	console.log(req.body);
 
 	var param = []
 	param.push(req.body.Time, req.body.IdVallet);
