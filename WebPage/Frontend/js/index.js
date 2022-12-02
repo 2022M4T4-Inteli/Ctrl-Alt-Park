@@ -29,11 +29,11 @@ setInterval(function(){
                                         </div>
                                         <div class="plate-content">
                                             <div class="plate-status default-border" style="--color: #F37F35;">
-                                                ` + parseFloat(objeto[i].TIME).toFixed(0) + ` min 
+                                                ` + parseFloat(objeto[i].TIME).toFixed(2) + ` min 
                                             </div>
                                         </div>
                                     </div>`)
             }
         }
     });
-}, 1000);
+}, 100);

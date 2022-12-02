@@ -87,7 +87,7 @@ app.post('/postVallet', async (req, res) => {
 	res.setHeader('Access-Control-Allow-Origin', '*');
 
 	var db = new sqlite3.Database(DBPATH);
-	var sql = `INSERT INTO VALLETS (PRISM, PLATE, STATUS, VALLET_PARKING1_ID, TIME1_VP1) VALUES(?, "XXX-XXXX", "Indo estacionar", 1, ?)`;
+	var sql = `INSERT INTO VALLETS (PRISM, PLATE, STATUS, VALLET_PARKING1_ID, TIME1_VP1) VALUES(?, "FYZ-3642", "Indo estacionar", 1, ?)`;
 
 	var data = formatDate(new Date());
 
