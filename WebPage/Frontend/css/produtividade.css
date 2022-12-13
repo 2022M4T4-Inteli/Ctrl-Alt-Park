@@ -1,0 +1,139 @@
+* {
+    font-family: 'Calibri Light', sans-serif;
+
+}
+
+/* Título da página */
+.menu {
+	position: fixed;
+	text-align: center;
+	width: 100%;
+	height: 70px;
+	background-color: rgba(112, 212, 75, 1);
+}
+
+.menu a {
+	color: white;
+	display: inline;
+	margin-right: 100px;
+	margin-left: 150px;
+}
+
+#Opcoes {
+	margin-top: 13px;
+    font-size: 30px;
+
+}
+
+#icone {
+	font-weight: bold;
+	text-align: left;
+	font-size: 25px;
+	margin-top: -17px;
+    margin-left: -10;
+
+}
+
+#Sair {
+	text-align: right;
+	margin-top: 20px;
+    font-size: 20px;
+    margin-left: 10px;
+}
+
+.title {
+    margin-top: 60px;
+    color: rgba(122, 122, 122, 1);
+    font-weight: 800;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+}
+
+th {
+    display: flex;
+    flex-direction: row;
+    border-style: none;
+    align-items: center;
+    justify-content: center;
+    height: 7rem;
+   
+}
+
+.page-body {
+    margin-top: 4.688rem;
+    width: auto;
+    margin-left: 0.7%;
+    margin-right: 0.7%;
+}
+
+.search-bar {
+    display: flex;
+    flex-direction: column;
+}
+
+.bar {
+    display: flex; 
+    height: 3rem;
+}
+
+.pesquisa {
+    width: 65%;
+}
+
+
+.bar select {
+    width: 35%;
+    height: 100%;
+    outline: none;
+    text-align: center;
+    border-style: none;
+    background-color: #F2F2F2;
+}
+
+#invoice-list {
+    display: flex;
+    width: 100%;
+}
+
+#partner-list {
+    display: flex;
+    width: 100%;
+}
+
+.id {
+    min-width: 5%;
+    text-align: center;
+}
+
+.nome {
+    min-width: 20%;
+    max-width: 20%;
+}
+
+.operacao {
+    width: 200%;
+    max-width: 200%;
+}
+
+.tempo {
+    width: 500%;
+    max-width: 500%;
+}
+
+.placa {
+    min-width: 10%;
+    max-width: 10%;
+}
+
+.saida {
+    min-width: 20%;
+    max-width: 20%;
+}
+
+.entrada {
+    min-width: 10%;
+    max-width: 10%;
+}
