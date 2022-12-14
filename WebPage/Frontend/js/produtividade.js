@@ -1,8 +1,10 @@
+var url = "http://10.128.64.59:2707";
+
 //This function runs when the page load
 $(document).ready(function(){ 
 
     //Request to get all vallets
-    $.get("http://10.128.64.59:2707/getStatistics", function (resultado) {
+    $.get(url + "/getStatistics", function (resultado) {
         var objeto = JSON.parse(resultado);
 
         //Starting table title
@@ -53,14 +55,14 @@ function addToTable(type, name, operation, time, plate, left, join){
                                 </tr>`);
 }
 
+//Function to check when a key is pressed to realize the search
 $(".pesquisa").keyup(function(event) {
+    //Checking if key pressed is Enter
     if (event.which === 13) {
+        //Switch to check which filter will be applied
         switch ($(".search-type").val()){
-            case "Operação":
-                
-                break;
             case "Manobrista":
-                $.get("http://10.128.64.59:2707/getStatistics", function (resultado) {
+                $.get(url + "/getStatistics", function (resultado) {
                     var objeto = JSON.parse(resultado);
 
                     //Removing datas that don't match with required name
@@ -100,7 +102,7 @@ $(".pesquisa").keyup(function(event) {
 
                 break;
             case "Placa":
-                $.get("http://10.128.64.59:2707/getStatistics", function (resultado) {
+                $.get(url + "/getStatistics", function (resultado) {
                     var objeto = JSON.parse(resultado);
 
                     //Removing datas that don't match with required plate
@@ -136,7 +138,7 @@ $(".pesquisa").keyup(function(event) {
 
                 break;
             case "Data":
-                $.get("http://10.128.64.59:2707/getStatistics", function (resultado) {
+                $.get(url + "/getStatistics", function (resultado) {
                     var objeto = JSON.parse(resultado);
 
                     var searchDate = new Date(Date.parse($(".pesquisa").val() + " 10:10:10"));

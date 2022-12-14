@@ -1,12 +1,14 @@
+var url = "http://10.128.64.59:2707";
+
 //Function that execute every 100 milliseconds
 setInterval(async function(){
 
     //Request to get all actives vallets to include on totem
-    $.get("http://10.128.64.59:2707/getAllVallets", function (resultado) {
+    $.get(url + "/getAllVallets", function (resultado) {
         var objeto = JSON.parse(resultado);
 
         //Request to get all solicited vallets to include on totem
-        $.get("http://10.128.64.59:2707/getAllSolicited", function (resultado) {
+        $.get(url + "/getAllSolicited", function (resultado) {
             var objetoSolicitados = JSON.parse(resultado);
 
             //Starting totems titles
@@ -45,7 +47,7 @@ setInterval(async function(){
                                         </div>`)
                 }
             }
-
+            
             //For to check if solicited vallet are actives
             for (j = 0; j < Object.keys(objetoSolicitados).length; j ++) {            
                 for (i = 0; i < Object.keys(objeto).length; i++) {
@@ -57,9 +59,10 @@ setInterval(async function(){
                         //Post request to update status from solicited vallets
                         $.ajax({
                             type: 'POST',
-                            url: "http://10.128.64.59:2707/updateSolicitedVallets",
+                            url: url + "/updateSolicitedVallets",
                             data: {
-                                Plate: objetoSolicitados[j].PLATE
+                                Plate: objetoSolicitados[j].PLATE,
+                                Status: "TRUE"
                             }
                         }).done(function () {
                             console.log("enviado com sucesso");

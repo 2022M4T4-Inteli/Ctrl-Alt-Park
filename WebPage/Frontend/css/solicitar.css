@@ -12,10 +12,41 @@ body {
 }
 .main {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100%;
     width: 100%;
+}
+
+.switch {
+    display: flex;
+    flex-direction: row;
+    width: 35%;
+    align-content: flex-start;
+}
+
+.switch button {
+    width: 7.5rem;
+    height: 4rem;
+    border-style: none;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    font-size: 1.5rem;
+    font-weight: 650;
+}
+
+.switch button:hover {
+    cursor: pointer;
+}
+
+.register {
+    background-color: rgba(255, 255, 255, 0.985);
+}
+
+.solicited {
+    color: #FFFFFF;
+    background-color: rgba(5, 5, 5, 0);
 }
 
 .window {
@@ -23,8 +54,11 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: rgba(255, 255, 255, 0.985);;
-    border-radius: 15px;
+    background-color: rgba(255, 255, 255, 0.985);
+    border-top-left-radius: 0px;
+    border-top-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
     height: 45%;
     width: 35%;
     gap: 2rem;

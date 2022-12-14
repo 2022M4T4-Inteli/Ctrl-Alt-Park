@@ -27,6 +27,31 @@ app.listen(port, hostname, () => {
 //Getting server status
 app.get('/serverStatus')
 
+//Get request to verify user login
+app.get('/getLogin/:username/:password', (req, res) => {
+	//Setting request status code
+	res.statusCode = 200;
+	res.setHeader('Access-Control-Allow-Origin', '*');
+
+	//Starting database connection and setting sql code
+	var db = new sqlite3.Database(DBPATH);
+	var sql = `SELECT * FROM USERS WHERE USERNAME = ? AND PASSWORD = ?`;
+
+	const { username, password } = req.params;
+
+	//Run sql code
+	db.all(sql, [username, password], (err, rows) => {
+		if (err) {
+			throw err;
+		}
+
+		res.send(JSON.stringify(rows));
+	});
+
+	//Closing database connection
+	db.close();
+});
+
 //Get request to get all solicited valletes in database
 app.get('/getAllSolicited', (req, res) => {
 	//Setting request status code
@@ -169,7 +194,7 @@ app.post('/addValletToTotem', async (req, res) => {
 
 	//Starting database connection and setting sql code
 	var db = new sqlite3.Database(DBPATH);
-	var sql = `INSERT INTO SOLICITED (PLATE, ATIVO) VALUES(?, "FALSE")`;
+	var sql = `INSERT INTO SOLICITED (PLATE, ATIVO) VALUES(?, "TRUE")`;
 
 	var param = [plate];
 
@@ -194,12 +219,12 @@ app.post('/postVallet', async (req, res) => {
 
 	//Starting database connection and setting sql code
 	var db = new sqlite3.Database(DBPATH);
-	var sql = `INSERT INTO VALLETS (PRISM, PLATE, STATUS, VALLET_PARKING1_ID, TIME1_VP1) VALUES(?, "YSE-5123", "Indo estacionar", 1, ?)`;
+	var sql = `INSERT INTO VALLETS (PRISM, PLATE, STATUS, VALLET_PARKING1_ID, TIME1_VP1) VALUES(?, ?, "Indo estacionar", 1, ?)`;
 
 	//Call function to transform date to string
 	var data = formatDate(new Date());
 
-	var param = [req.body.Prism, data];
+	var param = [req.body.Prism, plate, data];
 
 	console.log(req.body);
 
@@ -255,9 +280,10 @@ app.post('/updateSolicitedVallets', async (req, res) => {
 
 	//Starting database connection and setting sql code
 	var db = new sqlite3.Database(DBPATH);
-	var sql = `UPDATE SOLICITED SET ATIVO = "TRUE" WHERE PLATE = ?`;
+	var sql = `UPDATE SOLICITED SET ATIVO = ? WHERE PLATE = ?`;
 
 	var param = [];
+	param.push(req.body.Status);
 	param.push(req.body.Plate);
 
 	//Run sql code
