@@ -8,7 +8,7 @@ const sqlite3 = require('sqlite3').verbose();
 const DBPATH = 'DataBase/estapar.db';
 
 // const hostname = '127.0.0.1';
-const hostname = '10.128.64.231';
+const hostname = '10.254.17.118';
 // const hostname = '192.168.106.1';
 const port = 2707;
 
