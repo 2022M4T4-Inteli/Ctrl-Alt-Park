@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <header>
+        <link rel="stylesheet" href="../css/solicitar.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    </header>
+    <body>
+        <div class="main">
+            <div class="switch">
+                <button class="register" onclick="changeActionType('Registrar')">Registrar</button>
+                <button class="solicited" onclick="changeActionType('Solicitar')">Solicitar</button>
+            </div>
+            <div class="window">
+                <div class="inputs">
+                    <div class="input-collumn prism">
+                        <p>Prisma</p>
+                        <input type="text">
+                    </div>
+                    <div class="input-collumn">
+                        <p>Placa</p>
+                        <input class="plate" type="text">
+                    </div>
+                </div>
+                <div class="button">
+                    <button class="requestButton" onclick="sendToTotem()">Registrar</button>
+                </div>
+            </div>
+        </div>
+
+        <script src="../js/solicitar.js"></script>
+    </body>
+</html>
