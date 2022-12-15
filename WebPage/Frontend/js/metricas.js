@@ -121,11 +121,8 @@ setInterval(async function(){
                 //Removing datas that don't match with required time
                 for (var i = 0; i < arraySize; i++) {
                     var valletDate = new Date(Date.parse(objeto[i].TIME1_VP1));
-                    console.log(valletDate);
-                    console.log(actualDate);
 
                     if (actualDate > valletDate){
-                        console.log(objeto[i]);
                         delete objeto[i];
                     }
                 }
