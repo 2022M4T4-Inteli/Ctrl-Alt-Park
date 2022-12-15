@@ -2,8 +2,9 @@
 #include "WiFi.h"
 
 // Defining constants representing network name and password
-const char * WIFI_FTM_SSID = "Grupo5";
-const char * WIFI_FTM_PASS = "Grupo5-123";
+// Define the slave number
+const char * WIFI_FTM_SSID = "Slave_2_A1";
+const char * WIFI_FTM_PASS = "RX6]F^SEIHu[4HYj";
 
 void setup() {
   Serial.begin(115200);

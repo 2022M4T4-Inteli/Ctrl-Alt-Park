@@ -1,5 +1,7 @@
 var url = "http://10.128.64.59:2707";
 
+var arraySize = 0;
+
 //Function that execute every 100 milliseconds
 setInterval(async function(){
 
@@ -16,8 +18,10 @@ setInterval(async function(){
             $("#arrived").html(`<div class="label-title default-border" style="--color: #70D44B;">Chegou</div>`);
             $("#on-course").html(`<div class="label-title default-border" style="--color: #F37F35;">A caminho</div>`);
 
+            arraySize = Object.keys(objeto).length;
+
             //For to add all the vallet on totem
-            for (i = 0; i < Object.keys(objeto).length; i++) {
+            for (i = 0; i < arraySize; i++) {
 
                 //If to check which collumn has to be include the vallet, between fineshed and on course
                 if (objeto[i].STATUS == "Carro devolvido"){
@@ -48,8 +52,10 @@ setInterval(async function(){
                 }
             }
             
+            arraySize = Object.keys(objetoSolicitados).length;
+
             //For to check if solicited vallet are actives
-            for (j = 0; j < Object.keys(objetoSolicitados).length; j ++) {            
+            for (j = 0; j < arraySize; j ++) {            
                 for (i = 0; i < Object.keys(objeto).length; i++) {
                     if (objeto[i].STATUS == "Carro devolvido"){
                         continue;
@@ -75,8 +81,10 @@ setInterval(async function(){
 
             objetoSolicitados = objetoSolicitados.filter(function(){return true;});
 
+            arraySize = Object.keys(objetoSolicitados).length;
+
             //For to add all solicited vallets on totem
-            for (i = 0; i < Object.keys(objetoSolicitados).length; i ++) {
+            for (i = 0; i < arraySize; i ++) {
                 $("#requested").append(`<div class="plate default-border shadow">
                                             <div class="plate-image">
                                                 <img src="../icons/car-plate.png">

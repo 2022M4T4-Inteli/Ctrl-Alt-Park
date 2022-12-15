@@ -1,5 +1,7 @@
 var url = "http://10.128.64.59:2707";
 
+var arraySize = 0;
+
 //This function runs when the page load
 $(document).ready(function(){ 
 
@@ -18,13 +20,15 @@ $(document).ready(function(){
                                             <th class="entrada">Entrada</th>
                                         </tr>`);
 
+        arraySize = Object.keys(objeto).length;
+
         //For to insert all the data on a table
-        for (i = 0; i < Object.keys(objeto).length; i++) {
+        for (i = 0; i < arraySize; i++) {
             Object.assign(objeto[i], {"TIME1": convertToMinutes(new Date(Date.parse(objeto[i].TIME1_VP1)), new Date(Date.parse(objeto[i].TIME2_VP1)))});
             Object.assign(objeto[i], {"TIME2": convertToMinutes(new Date(Date.parse(objeto[i].TIME1_VP2)), new Date(Date.parse(objeto[i].TIME2_VP2)))});
 
-            addToTable("Estacionar", objeto[i].NAME1, "Inteli", objeto[i].TIME1, objeto[i].PLATE, objeto[i].TIME1_VP1, objeto[i].TIME2_VP1);
-            addToTable("Devolver", objeto[i].NAME2, "Inteli", objeto[i].TIME2, objeto[i].PLATE, objeto[i].TIME1_VP2, objeto[i].TIME2_VP2);
+            addToTable("Estacionar", objeto[i].NAME1, objeto[i].OPERATION, objeto[i].TIME1, objeto[i].PLATE, objeto[i].TIME1_VP1, objeto[i].TIME2_VP1);
+            addToTable("Devolver", objeto[i].NAME2, objeto[i].OPERATION, objeto[i].TIME2, objeto[i].PLATE, objeto[i].TIME1_VP2, objeto[i].TIME2_VP2);
         }
     });
 });
@@ -65,8 +69,10 @@ $(".pesquisa").keyup(function(event) {
                 $.get(url + "/getStatistics", function (resultado) {
                     var objeto = JSON.parse(resultado);
 
+                    arraySize = Object.keys(objeto).length;
+
                     //Removing datas that don't match with required name
-                    for (i = 0; i < Object.keys(objeto).length; i ++){
+                    for (i = 0; i < arraySize; i ++){
                         if (objeto[i].NAME1 != $(".pesquisa").val() && objeto[i].NAME2 != $(".pesquisa").val()){
                             delete objeto[i];
                         }
@@ -86,8 +92,10 @@ $(".pesquisa").keyup(function(event) {
                                                         <th class="entrada">Entrada</th>
                                                     </tr>`);
 
+                    arraySize = Object.keys(objeto).length;
+
                     //For to insert all the data on a table
-                    for (i = 0; i < Object.keys(objeto).length; i++) {
+                    for (i = 0; i < arraySize; i++) {
                         Object.assign(objeto[i], {"TIME1": convertToMinutes(new Date(Date.parse(objeto[i].TIME1_VP1)), new Date(Date.parse(objeto[i].TIME2_VP1)))});
                         Object.assign(objeto[i], {"TIME2": convertToMinutes(new Date(Date.parse(objeto[i].TIME1_VP2)), new Date(Date.parse(objeto[i].TIME2_VP2)))});
 
@@ -105,8 +113,10 @@ $(".pesquisa").keyup(function(event) {
                 $.get(url + "/getStatistics", function (resultado) {
                     var objeto = JSON.parse(resultado);
 
+                    arraySize = Object.keys(objeto).length;
+
                     //Removing datas that don't match with required plate
-                    for (i = 0; i <= Object.keys(objeto).length; i ++){
+                    for (i = 0; i < arraySize; i ++){
                         if (objeto[i].PLATE != $(".pesquisa").val()){
                             delete objeto[i];
                         }
@@ -126,8 +136,10 @@ $(".pesquisa").keyup(function(event) {
                                                         <th class="entrada">Entrada</th>
                                                     </tr>`);
 
+                    arraySize = Object.keys(objeto).length;
+
                     //For to insert all the data on a table
-                    for (i = 0; i <= Object.keys(objeto).length; i++) {
+                    for (i = 0; i < arraySize; i++) {
                         Object.assign(objeto[i], {"TIME1": convertToMinutes(new Date(Date.parse(objeto[i].TIME1_VP1)), new Date(Date.parse(objeto[i].TIME2_VP1)))});
                         Object.assign(objeto[i], {"TIME2": convertToMinutes(new Date(Date.parse(objeto[i].TIME1_VP2)), new Date(Date.parse(objeto[i].TIME2_VP2)))});
 
@@ -143,8 +155,10 @@ $(".pesquisa").keyup(function(event) {
 
                     var searchDate = new Date(Date.parse($(".pesquisa").val() + " 10:10:10"));
 
+                    arraySize = Object.keys(objeto).length;
+
                     //Removing datas that don't match with required date
-                    for (i = 0; i <= Object.keys(objeto).length; i ++){
+                    for (i = 0; i < arraySize; i ++){
                         var dateIndex = new Date(Date.parse(objeto[i].TIME1_VP1));
 
                         if (dateIndex.getFullYear() == searchDate.getFullYear() && dateIndex.getMonth() == searchDate.getMonth() && dateIndex.getDate() == searchDate.getDate()){}
@@ -167,8 +181,10 @@ $(".pesquisa").keyup(function(event) {
                                                         <th class="entrada">Entrada</th>
                                                     </tr>`);
 
+                    arraySize = Object.keys(objeto).length;
+
                     //For to insert all the data on a table
-                    for (i = 0; i < Object.keys(objeto).length; i++) {
+                    for (i = 0; i < arraySize; i++) {
                         Object.assign(objeto[i], {"TIME1": convertToMinutes(new Date(Date.parse(objeto[i].TIME1_VP1)), new Date(Date.parse(objeto[i].TIME2_VP1)))});
                         Object.assign(objeto[i], {"TIME2": convertToMinutes(new Date(Date.parse(objeto[i].TIME1_VP2)), new Date(Date.parse(objeto[i].TIME2_VP2)))});
 

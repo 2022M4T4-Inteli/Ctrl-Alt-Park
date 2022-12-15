@@ -1,5 +1,4 @@
 // Including librarys
-#include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 #include <MFRC522.h>
 #include <SPI.h>
@@ -8,127 +7,91 @@
 #include <string.h>
 #include <Arduino_JSON.h>
 #include <HTTPClient.h>
-#include <WiFiMulti.h>
-#include <Adafruit_MMA8451.h>
-#include <Adafruit_Sensor.h>
 
-// Defining the variables that represent the ports
-LiquidCrystal_I2C lcd(0x27, 16, 2);
-
-#define RFID_SS_SDA 21
+//Defining compiler constants
+#define RFID_SS_SDA 10
 #define RFID_RST 14
 #define BUZZER 18
-#define LED1 36
-#define LED2 39
-#define LED3 45
-#define LED4 37
+#define LED4 8
 #define PRISMA_NUMBER 256
+#define OPERATION "Inteli"
+#define LENGHT_ARRAY 100
 
-// Adafruit_MMA8451 mma = Adafruit_MMA8451();
 
 // Instantiating objects
-WiFiMulti wifiMulti;
+xSemaphoreHandle ftmSemaphore;
 MFRC522 rfidBase = MFRC522(RFID_SS_SDA, RFID_RST);
 String jsonVars;
-xSemaphoreHandle ftmSemaphore;
 JSONVar getJson;
 
 // Instantiating variables
-String serverName = "http://10.128.64.231:2707/";
+String serverName = "http://10.128.64.59:2707/";
+String codeRegion;
 float distance;
 int iniciar = 0, ledState = LOW;
 int count = 0;
 unsigned long previousMillis = 0;
-bool count_c = false, ftmSuccess = true;
+bool count_c = true, ftmSuccess = true;
+double velocityMensured = 0;
+double indexDistance;
 
 
 // Defining constants
-const char* ssid_ap = "Grupo5";
-const char* password_ap = "Grupo5-123";
-const char *AP_SSID = "Inteli-COLLEGE";
-const char *AP_PWD = "QazWsx@123";
+String slave_Fouded;
+String SSIDs[LENGHT_ARRAY];
+int32_t RSSIs[LENGHT_ARRAY];
+const char* password_ap = "RX6]F^SEIHu[4HYj";
+const char* AP_SSID = "Inteli-COLLEGE";
+const char* AP_PWD = "QazWsx@123";
 
-const float velocity = 1;
+const double velocity = 2.0;
 
 const int IdValletParking = 1;
-const int I2C_SDA = 2;
-const int I2C_SCL = 1;
 
 const uint8_t FTM_FRAME_COUNT = 16;
 const uint16_t FTM_BURST_PERIOD = 2;
 
-// int scanI2C(){
-//   byte error, address;
-//   int nDevices;
+//Function that reset the values of the netowork arrays
+void resetNetworks(){
+  for(int i=0; i <LENGHT_ARRAY; i++){
+    SSIDs[i] = "";
+    RSSIs[i] = NULL;
+  }
+}
 
-//   Serial.println("Scanning...");
-
-//   nDevices = 0;
-//   for(address = 1; address< 127; address++ ) 
-//   {
-//     // The i2c_scanner uses the return value of
-//     // the Write.endTransmisstion to see if
-//     // a device did acknowledge to the address.
-//     Wire.beginTransmission(address);
+//Funtcion that scan the wifi network and get the slaves networks to the arrays and yours force of signal
+void foundSlave() {
+  //Scanning Networks until found someone
+  int8_t scanResults = WiFi.scanNetworks();
+  while(scanResults == 0){
+    scanResults = WiFi.scanNetworks();
     
+  }
+  //reset slaves
+  int SlaveCnt = 0;
+  if (scanResults != 0) {
 
-//     if (error == 0)
-//     {
-//       Serial.print("I2C device found at address 0x");
-//       if (address<16) 
-//         Serial.print("0");
-//       Serial.println(address,HEX);
-//       return (address,HEX);
-//       Serial.println("  !");
+    for (int i = 0; i < scanResults; ++i) {
+    
+      // Check if the current device starts with `Slave`
+      if (WiFi.SSID(i).indexOf("Slave_") == 0) {
+        SSIDs[SlaveCnt] = WiFi.SSID(i);
+        RSSIs[SlaveCnt] = WiFi.RSSI(i);
+    
+        SlaveCnt++;
+      }
+    }
+}
+}
 
-//       nDevices++;
-//     }
-//     else if (error==4) 
-//     {
-//       Serial.print("Unknow error at address 0x");
-//       if (address<16) 
-//         Serial.print("0");
-//       Serial.println(address,HEX);
-//     }    
-//   }
-//   if (nDevices == 0)
-//     Serial.println("No I2C devices found\n");
-//   else
-//     Serial.println("done\n");
+//Function to get the value of meters by the slave and your respective region
+void getDistanceSlave(String slave){
+  int firstIndex = slave.indexOf("_");
+  int secondIndex = slave.indexOf("_", firstIndex + 1 );
+  indexDistance = slave.substring(firstIndex+1, secondIndex).toDouble();
+  codeRegion = slave.substring(secondIndex+1);
 
-//   delay(5000);  
-// }
-
-// void acelerometerInit(){
-//   if (! mma.begin(scanI2C())) {
-//     Serial.println("Couldnt start");
-//     while (1);
-//   }
-//   Serial.println("MMA8451 found!");
-  
-//   mma.setRange(MMA8451_RANGE_2_G);
-  
-//   Serial.print("Range = "); Serial.print(2 << mma.getRange());  
-//   Serial.println("G");
-// }
-
-// void readAcelerometer(){
-//   mma.read();
-//   Serial.print("X:\t"); Serial.print(mma.x); 
-//   Serial.print("\tY:\t"); Serial.print(mma.y); 
-//   Serial.print("\tZ:\t"); Serial.print(mma.z); 
-//   Serial.println();
-
-//   /* Get a new sensor event */ 
-//   sensors_event_t event; 
-//   mma.getEvent(&event);
-
-//   /* Display the results (acceleration is measured in m/s^2) */
-//   Serial.print("X: \t"); Serial.print(event.acceleration.x); Serial.print("\t");
-//   Serial.print("Y: \t"); Serial.print(event.acceleration.y); Serial.print("\t");
-//   Serial.print("Z: \t"); Serial.print(event.acceleration.z); Serial.print("\t");
-//   Serial.println("m/s^2 ");
-// }
+}
 
 // Function for validating the status of the FTM
 void onFtmReport(arduino_event_t *event) {
@@ -145,11 +108,9 @@ void onFtmReport(arduino_event_t *event) {
   if (ftmSuccess) {
 
     //Assigning new distance value through FTM
-    distance =  (float)report->dist_est / 100.0 - 41;    
+    getDistanceSlave(slave_Fouded);
+    distance =  (float)report->dist_est / 100.0 - 41 +(indexDistance*20);    
     
-    // Showing display infos
-    lcd.setCursor(6, 1);
-    lcd.print(String((float)report->dist_est / 100.0 - 41));
     free(report->ftm_report_data);
   } else {
     Serial.print("FTM Error: ");
@@ -171,7 +132,8 @@ bool getFtmReport(){
 
 //Getting estimated time of arrival value from esp to paired esp
 String getTime(){
-  return String((distance/velocity)/60);
+  getDistanceSlave(slave_Fouded);
+  return String(((distance+(indexDistance*20))/velocity)/60);
 }
 
 //Function makes a request to serverName and it retrieves a string with a JSON object.
@@ -280,14 +242,18 @@ void updateValletStatus(){
   }
 }
 
-void getValletSatus(char* card_id, float distance, const char* ssid_ap, int count){
+void getValletSatus(char* card_id, float distance, String ssid_ap, int count){
   Serial.println("Getting JSON data to server...");
   // Block until we are able to connect to the WiFi access point
   //Check WiFi connection status
   if(WiFi.status()== WL_CONNECTED){
+    String valletInfo;
             
     //Receiving return string from the httpGETRequest function and converting it to JSON
-    String valletInfo = httpGETRequest();
+    do{
+      valletInfo = httpGETRequest();   
+    }while(valletInfo == "{}");
+    
     JSONVar myObject = JSON.parse(valletInfo);
     
     //Checking if a value was returned by the endpoint
@@ -297,18 +263,18 @@ void getValletSatus(char* card_id, float distance, const char* ssid_ap, int coun
     }
 
     //Storing returned values in ESP global variables
-    int prism = myObject[0]["PRISM"];
     int idVallet = myObject[0]["ID"];
     String status = myObject[0]["STATUS"];
 
     //Updating JSON values
     getJson["IdVallet"] = idVallet;
-    getJson["Prism"] = prism;
+    getJson["Prism"] = PRISMA_NUMBER;
     getJson["Status"] = status;
     getJson["IdValletParking"] = 1;
     getJson["Time"] = getTime();
     getJson["Card_Id"] = card_id;
     getJson["Distance"] = distance;
+    getJson["CodeRegion"] = codeRegion;
     getJson["Asid_AP"] = ssid_ap;
     getJson["Count"] = count;
 
@@ -318,7 +284,7 @@ void getValletSatus(char* card_id, float distance, const char* ssid_ap, int coun
   }
 }
 
-void postDataToServer(char* card_id, float distance, const char* ssid_ap, int count) {
+void postDataToServer(char* card_id, float distance, String ssid_ap, int count) {
   Serial.println("Posting JSON data to server...");
   // Block until we are able to connect to the WiFi access point
   //Check WiFi connection status
@@ -334,9 +300,9 @@ void postDataToServer(char* card_id, float distance, const char* ssid_ap, int co
     //Adding Values to JSON
     getJson["Prism"] = PRISMA_NUMBER;
     getJson["Card_Id"] = card_id;
-    getJson["Distance"] = distance;
-    getJson["Asid_AP"] = ssid_ap;
-    getJson["Count"] = count;
+    getJson["CodeRegion"] = codeRegion;
+    getJson["Ssid_AP"] = ssid_ap;
+    getJson["Operation"] = OPERATION;
 
     //Converting the string to JSON and sending the post
     String requestBody = JSON.stringify(getJson);
@@ -360,6 +326,7 @@ void postDataToServer(char* card_id, float distance, const char* ssid_ap, int co
     }
 }
 
+
 // Creating RFID class
 class LeitorRFID{
   private:
@@ -371,15 +338,18 @@ class LeitorRFID{
     int cartaoJaLido = 0;
 
     //Function that returns code read in the reader
-    char* processaCodigoLido(){
-        char codigo[3*rfid->uid.size+1];
-        codigo[0] = 0;
-        char temp[10];
-      
-        codigo[3*rfid->uid.size+1] = 0;
-        strcpy(codigoRFIDLido,codigo);
-        return codigoRFIDLido;
+    char* processaCodigoLido(){ 
+      char codigo[3*rfid->uid.size+1];
+      codigo[0] = 0;
+      char temp[10];
+      for(int i=0; i < rfid->uid.size; i++){
+        sprintf(temp,"%X",rfid->uid.uidByte[i]);
+        strcat(codigo,temp);
       }
+      codigo[3*rfid->uid.size+1] = 0;
+      strcpy(codigoRFIDLido,codigo);
+      return codigoRFIDLido;
+    }
 
   public:
 
@@ -406,11 +376,34 @@ class LeitorRFID{
       return(cartaoJaLido);
     };
 
+    //This function try to connect to the slave with the most strenght signal
+    String connect(){
+      do{
+        foundSlave();
+      }while(SSIDs[0]=="");
+      
+      int32_t maxVal = RSSIs[0];
+      int index = 0;
+      for (int i = 0; i < (sizeof(RSSIs) / sizeof(RSSIs[0])); i++) {
+        if (RSSIs[i]!= 0 && RSSIs[i] > maxVal) {
+          maxVal = RSSIs[i];
+          index = i;
+        }
+      }
+      // Connecting to WiFi
+      wifiConnection(SSIDs[index].c_str(), password_ap);
+
+      
+      // clean up ram
+      WiFi.scanDelete();
+      return SSIDs[index];
+    }
+
     //Function to blink led if the car is moving
     void tinkleLed(){
 
       // Interval constant
-      const long interval = 1000;
+      const long interval = 500;
 
       if (millis() - previousMillis >= interval) {
           // save the last time you blinked the LED
@@ -428,15 +421,19 @@ class LeitorRFID{
           digitalWrite(LED4, ledState);
         }
     }
-
     //Function that defines a new distance and returns card read
-    char* data(){
-      getFtmReport();
-      return (processaCodigoLido());
-    }
 
     //Function that checks the current interaction with the ESP and performs the corresponding request
-    void requestVerify(){
+    void requestVerify(){      
+
+      //Start connecting to the ESP
+      slave_Fouded = connect();
+      
+      //Updating the distance value
+      getFtmReport();
+      
+      //Reseting the array networks
+      resetNetworks();
 
       //Start connecting to the server
       wifiConnection(AP_SSID, AP_PWD);
@@ -444,71 +441,67 @@ class LeitorRFID{
       switch(count){
         case 1:
           //Send prism value to server
-          postDataToServer(data(), distance, ssid_ap, count);
+          postDataToServer(processaCodigoLido(), distance, slave_Fouded, count);
+          count_c = false;
           break;
         case 2:
           //Updating valet values ​​on the server
-          getValletSatus(data(), distance, ssid_ap, count);
-          delay(100);
+          getValletSatus(processaCodigoLido(), distance, slave_Fouded, count);
+          delay(10);
+          //Updating the values of database
           updateValletStatus();
+          count_c = false;
           break;
         case 3:
+          tinkleLed();
+          leCartao();
           //Updating valet values ​​on the server
-          getValletSatus(data(), distance, ssid_ap, count);
+          getValletSatus(processaCodigoLido(), distance, slave_Fouded, count);
+          tinkleLed();
+          leCartao();
           delay(10);
+          //Updating the values of database
           updateValletStatus();
-          delay(10);
-          updateValletTime();
           while(count == 3){
+            //Start connecting to the ESP
+            slave_Fouded = connect();
             tinkleLed();
             leCartao();
-
-            //Start connecting to the ESP
-            wifiConnection(ssid_ap, password_ap);
 
             //Updating the distance value
             getFtmReport();
-
-            //Start connecting to the server
-            wifiConnection(AP_SSID, AP_PWD);
-
+            //Reseting the array networks
+            resetNetworks();
             tinkleLed();
             leCartao();
-
-            getValletSatus(data(), distance, ssid_ap, count);
-
+            //Start connecting to the server
+            wifiConnection(AP_SSID, AP_PWD);
+            tinkleLed();
+            leCartao();
+            //Updating valet values ​​on the server
+            getValletSatus(processaCodigoLido(), distance, slave_Fouded, count);
+            tinkleLed();
+            leCartao();
             delay(10);
-
+            //Updating valet values of time ​​on the server
             updateValletTime();
-
             tinkleLed();
             leCartao();
           }
           break;
         case 4:
           //Updating valet values ​​on the server and resetting the counter
-          getValletSatus(data(), distance, ssid_ap, count);
+          getValletSatus(processaCodigoLido(), distance, slave_Fouded, count);
           delay(10);
+          //Updating the values of database
           updateValletStatus();
+
+          //Reseting state variables
+          count_c = false;
           count = 0;
           break;
       }
-      //Start connecting to the ESP
-      wifiConnection(ssid_ap, password_ap);
-    }
-
-    //Function that checks the state of the system and executes the function determined for the moment
-    void parking(){
-      requestVerify();
-      while(count%2 != 0){
-        if (count == 3){
-          //função que posta dados no servidor
-          requestVerify();
-        }
-        tinkleLed();
-        leCartao();
-      }
-      requestVerify();
+      
     }
 
     // Functon to read card and giving feedback to user
@@ -519,6 +512,7 @@ class LeitorRFID{
         cartaoDetectado = 1;
         if (rfid->PICC_ReadCardSerial()) {
           count++;
+          count_c = true;
           Serial.println("Cartao lido");
           cartaoJaLido = 1;
           rfid->PICC_HaltA(); // Halt PICC
@@ -548,9 +542,14 @@ class LeitorRFID{
     }
 
     //Function that start a wifi conection and print '.' while connection is starting
-    void wifiConnection(const char *login, const char *password){
+    void wifiConnection(const char* login, const char* password){
+      if(WiFi.status() == WL_CONNECTED){
+        WiFi.disconnect();
+      }
       WiFi.begin(login, password);
       const long interval = 500;
+      const long intervalSlave = 4000;
+      long previousSlave = millis();
 
       while (WiFi.status() != WL_CONNECTED) {
         unsigned long currentMillis = millis();
@@ -565,14 +564,23 @@ class LeitorRFID{
             ledState = HIGH;
           } else {
             ledState = LOW;
+            WiFi.begin(login, password);
           }
 
             // set the LED with the ledState of the variable:
         }
         tinkleLed();
         leCartao();
+
+        //Verify if the connection with the slave didnt happen, then try to found another Slave
+        if(millis() - previousSlave >= intervalSlave && login != AP_SSID){
+          WiFi.disconnect();
+          resetNetworks();
+          requestVerify();
+        }
         
       }
+      Serial.println("\nConectado a: "+String(login));
     }
 };
 
@@ -587,66 +595,35 @@ void setup() {
   SPI.begin();
 
   // Defining data type of each port(input and output)
-  pinMode(LED1, OUTPUT);
-  pinMode(LED2, OUTPUT);
   pinMode(LED4, OUTPUT);
   pinMode(BUZZER, OUTPUT);
-  pinMode(LED3, OUTPUT);
-
-  // Turn on led
-  digitalWrite(LED1, HIGH);
-
-  // Wire.begin(4, 5);
-
-  // acelerometerInit();
+  
 
   // Setting reader class to a variable
   leitor = new LeitorRFID(&rfidBase);
 
-  // Starting display
-  Wire.begin(I2C_SDA, I2C_SCL);
-  lcd.init();                
-  lcd.backlight();
   
   ftmSemaphore = xSemaphoreCreateBinary();
   
   // Starting FTM event
   WiFi.onEvent(onFtmReport, ARDUINO_EVENT_WIFI_FTM_REPORT);
   
-  // Connecting to WiFi
-  Serial.println("Connecting to FTM Responder");
-  leitor->wifiConnection(ssid_ap, password_ap);
- 
-  //Checking if the connection between the ESPs has happened
-  if(WiFi.status()== WL_CONNECTED){
-      Serial.println("\nConectado");    
-  }
 }
 
 void loop() {
-
-  // readAcelerometer();
 
   // Starting reader
   leitor->leCartao();
 
   //Checking if the driver has initiated the interaction
-  if(count%2 != 0){
-
+  if(count != 0 && count_c==true){
     //Starting function to access endpoints
-    leitor->parking();
-  }
-  
-  // Checking card
-  if(leitor->cartaoFoiLido()){
-    // Writing card type on cosole and reseting reading
-    Serial.println(leitor->tipoCartao());
-    Serial.println(leitor->cartaoLido());
-    leitor->resetarLeitura();
+    leitor->requestVerify();
   }
 
-  // Defining position on display
-  lcd.setCursor(4, 0);
-  // Printing on display
-  lcd.print("Distancia");
+  //If the state of system is impar then tinkle the led
+  if(count%2 !=0){
+    leitor->tinkleLed();
+  }
+
 }

@@ -18,6 +18,7 @@ app.use(express.static("../Frontend"));
 app.use(express.static("../Frontend/html"));
 
 var plate = "YSE-5123";
+var firstDate;
 
 //Starting server
 app.listen(port, hostname, () => {
@@ -52,7 +53,7 @@ app.get('/getLogin/:username/:password', (req, res) => {
 	db.close();
 });
 
-//Get request to get all solicited valletes in database
+//Get request to get all solicited vallets in database
 app.get('/getAllSolicited', (req, res) => {
 	//Setting request status code
 	res.statusCode = 200;
@@ -219,12 +220,12 @@ app.post('/postVallet', async (req, res) => {
 
 	//Starting database connection and setting sql code
 	var db = new sqlite3.Database(DBPATH);
-	var sql = `INSERT INTO VALLETS (PRISM, PLATE, STATUS, VALLET_PARKING1_ID, TIME1_VP1) VALUES(?, ?, "Indo estacionar", 1, ?)`;
+	var sql = `INSERT INTO VALLETS (OPERATION, PRISM, PLATE, STATUS, VALLET_PARKING1_ID, TIME1_VP1) VALUES(?, ?, ?, "Indo estacionar", 1, ?)`;
 
 	//Call function to transform date to string
 	var data = formatDate(new Date());
 
-	var param = [req.body.Prism, plate, data];
+	var param = [req.body.Operation, req.body.Prism, plate, data];
 
 	console.log(req.body);
 
@@ -241,6 +242,19 @@ app.post('/postVallet', async (req, res) => {
 	db.close();
 });
 
+//Function to get time to find car
+function timeToFind(date1, date2){
+	var firstMin = date1.getHours() * 60;
+    var firstMin = firstMin + date1.getMinutes();
+
+    var lastMin = date2.getHours() * 60;
+    var lastMin = lastMin + date2.getMinutes();
+
+    var absoluteMinutes = lastMin - firstMin;
+
+	return absoluteMinutes;
+}
+
 //Function to choose sql code accord to actual status of vallet
 function SqlCode(status, idValledParking, idVallet, date){
 	var strSql = ``;
@@ -255,8 +269,8 @@ function SqlCode(status, idValledParking, idVallet, date){
 			break;
 		
 		case "Estacionado":
-			strSql = `UPDATE VALLETS SET STATUS = "Retornando carro ao cliente", VALLET_PARKING2_ID = ?, TIME1_VP2 = ? WHERE ID = ?`;
-			param.push(idValledParking, date, idVallet);
+			strSql = `UPDATE VALLETS SET STATUS = "Retornando carro ao cliente", VALLET_PARKING2_ID = ?, TIME1_VP2 = ?, FIND_TIME = ? WHERE ID = ?`;
+			param.push(2, date, timeToFind(firstDate, new Date()), idVallet);
 
 			break;
 
@@ -276,7 +290,7 @@ app.post('/updateSolicitedVallets', async (req, res) => {
 	res.statusCode = 200;
 	res.setHeader('Access-Control-Allow-Origin', '*');
 
-	date = formatDate(new Date())
+	firstDate = new Date();
 
 	//Starting database connection and setting sql code
 	var db = new sqlite3.Database(DBPATH);
