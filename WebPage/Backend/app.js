@@ -10,14 +10,8 @@ app.use(express.json());
 const sqlite3 = require('sqlite3').verbose();
 const DBPATH = 'DataBase/estapar.db';
 
-<<<<<<< HEAD
-// const hostname = '127.0.0.1';
-const hostname = '10.254.17.118';
-// const hostname = '192.168.106.1';
-=======
 //Defining hostname and port
 const hostname = '10.128.64.59';
->>>>>>> c049cb82b14d7c57c8ce06ded5a9fd7231533766
 const port = 2707;
 
 app.use(express.static("../Frontend"));
@@ -59,7 +53,7 @@ app.get('/getLogin/:username/:password', (req, res) => {
 	db.close();
 });
 
-//Get request to get all solicited valletes in database
+//Get request to get all solicited vallets in database
 app.get('/getAllSolicited', (req, res) => {
 	//Setting request status code
 	res.statusCode = 200;

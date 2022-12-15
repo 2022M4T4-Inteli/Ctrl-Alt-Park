@@ -158,7 +158,7 @@ $(".pesquisa").keyup(function(event) {
                     arraySize = Object.keys(objeto).length;
 
                     //Removing datas that don't match with required date
-                    for (i = 0; i <= arraySize; i ++){
+                    for (i = 0; i < arraySize; i ++){
                         var dateIndex = new Date(Date.parse(objeto[i].TIME1_VP1));
 
                         if (dateIndex.getFullYear() == searchDate.getFullYear() && dateIndex.getMonth() == searchDate.getMonth() && dateIndex.getDate() == searchDate.getDate()){}
